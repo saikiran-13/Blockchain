@@ -240,7 +240,6 @@ function Blockchain() {
     verification()
 }
 Blockchain()
-console.log(nonceList)
 
 
 
