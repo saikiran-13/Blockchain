@@ -53,7 +53,7 @@ class transcationHash {
         this.source = source
         this.destination = destination
         this.amount = amount
-        this.valid = this.validTranscation()
+      
     }
 
     validTranscation() {//
@@ -112,7 +112,7 @@ class Block {
         }
     }
 
-    mining(temphash) {
+    mining(temphash) {//Getting the desired current hash
         let target = Array(this.difficulty + 1).join('0')
         while (true) {
             if (temphash.substring(0, this.difficulty) == target) {
@@ -143,6 +143,7 @@ class Block {
 
 function Blockchain() {
 
+
     //Block1 containing a list of transcations
     const transcation1 = new transcationHash('1', 'Ram', 'Raghu', 10000)
     const transcation2 = new transcationHash('2', 'Kiran', 'Rahul', 7000)
@@ -161,12 +162,11 @@ function Blockchain() {
     const transcation6 = new transcationHash('6', 'Lokesh', 'Ganesh', 40000)
     transcations.push(transcation5.gethash(), transcation6.gethash())
     const block3 = new Block(new Merkletree(transcations))
-    console.log(chain)
 
 
     let listOfTranscations = [transcation1,transcation2,transcation3,transcation4,transcation5,transcation6]
     //Tampering with the Blockchain
-    let Transindex = 5
+    let Transindex = 1
     // listOfTranscations[Transindex].amount = 40000
    
     let blocks = [block1,block2,block3]
@@ -177,14 +177,14 @@ function Blockchain() {
     }
 
     newTransHashes[Transindex] = listOfTranscations[Transindex].gethash()
-
+    
 
 
     function verification() {
         let tempblock;
         let i = 0
         let index
-        
+
         outerloop:
         for (let ind = 0; ind < transcationslist.length; ind++) {
             for (let innerind = 0; innerind < transcationslist[ind].length; innerind++) {
@@ -199,12 +199,15 @@ function Blockchain() {
             }
         }
 
+
         if (tempblock) {
             const changed = new Merkletree(tempblock)
             let curr = blocks[index].targethash(changed)
             
             if (blocks[index].mining(curr) != chain[index].currentHash ) {
                 mine = true
+                chain[index].currentHash = blocks[index].mining(curr)
+                console.log(chain)
                 console.log("Before changing,currenthash",chain[index].currentHash)
                 console.log(`Data changed in block${index+1}!!!`)
                 console.log("After changing,currenthash", curr)
@@ -216,18 +219,19 @@ function Blockchain() {
             for (let i = 0; i < chain.length; i++) {
                 if (i == chain.length - 1) break
                 else if (chain[i].currentHash != chain[i + 1].previousHash) {
+                    
                     console.log("Blockchain not properly linked")
 
                 }
             }
-
             
         }
 
         else {
+            console.log(chain)
             console.log("\nBlockchain verified successfully :)")
         }
-        
+
 
     }
     verification()
