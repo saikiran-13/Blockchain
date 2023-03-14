@@ -4,6 +4,7 @@ const chain = []
 const blockids = []
 let transcations = []
 let transcationslist = []
+let nonceList = []
 let noOfBlocks = 1
 let count = -1
 let mine = false
@@ -112,13 +113,15 @@ class Block {
         }
     }
 
-    mining(temphash) {//Getting the desired current hash
+    mining(temphash) {//Getting the desired current hash with the given difficulty
         let target = Array(this.difficulty + 1).join('0')
         while (true) {
-            if (temphash.substring(0, this.difficulty) == target) {
+            if (temphash.substring(0, this.difficulty) == target && !nonceList.includes(this.nonce)) {
                 if (!mine) {
                     previoushashes.push(temphash)
+                    nonceList.push(this.nonce)
                 }
+                
                 return this.currentHash
             }
             else {
@@ -167,7 +170,7 @@ function Blockchain() {
     let listOfTranscations = [transcation1,transcation2,transcation3,transcation4,transcation5,transcation6]
     //Tampering with the Blockchain
     let Transindex = 1
-    // listOfTranscations[Transindex].amount = 40000
+    listOfTranscations[Transindex].amount = 40000
    
     let blocks = [block1,block2,block3]
 
@@ -202,10 +205,11 @@ function Blockchain() {
 
         if (tempblock) {
             const changed = new Merkletree(tempblock)
+            chain[index].transcation = changed
             let curr = blocks[index].targethash(changed)
-            
+            mine = true
             if (blocks[index].mining(curr) != chain[index].currentHash ) {
-                mine = true
+              
                 chain[index].currentHash = blocks[index].mining(curr)
                 console.log(chain)
                 console.log("Before changing,currenthash",chain[index].currentHash)
@@ -219,7 +223,6 @@ function Blockchain() {
             for (let i = 0; i < chain.length; i++) {
                 if (i == chain.length - 1) break
                 else if (chain[i].currentHash != chain[i + 1].previousHash) {
-                    
                     console.log("Blockchain not properly linked")
 
                 }
@@ -237,6 +240,7 @@ function Blockchain() {
     verification()
 }
 Blockchain()
+console.log(nonceList)
 
 
 
